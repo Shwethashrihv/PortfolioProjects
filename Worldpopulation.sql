@@ -49,9 +49,6 @@ SELECT Country, `2022 Population`
 FROM world_population
 WHERE Continent = 'Asia' AND `2022 Population` > 100000000;
 
--- Correlation between area and population density
-SELECT `Area (km²)`, `Density`
-FROM world_population;
 
 -- Countries where the population in 2022 is less than in 2000
 SELECT Country, `2022 Population`, `2000 Population`
@@ -86,15 +83,6 @@ SELECT Country,
 FROM world_population
 WHERE `2000 Population` > 0;
 
--- Correlation Between Population and Area
-SELECT 
-    (COUNT(*) * SUM(`2022 Population` * `Area (km²)`) - SUM(`2022 Population`) * SUM(`Area (km²)`)) /
-    SQRT(
-        (COUNT(*) * SUM(POW(`2022 Population`, 2)) - POW(SUM(`2022 Population`), 2)) *
-        (COUNT(*) * SUM(POW(`Area (km²)`, 2)) - POW(SUM(`Area (km²)`), 2))
-    ) AS Population_Area_Correlation
-FROM world_population;
-
 
 -- Top Continent by Population Growth Rate
 
@@ -119,27 +107,6 @@ SELECT Country,
        Density_Change
 FROM DensityChange;
 
--- Countries with Growth Rate Above the Continent Average
-
-WITH ContinentAverageGrowthRate AS (
-    SELECT Continent,
-           AVG(`Growth Rate`) AS Average_Growth_Rate
-    FROM world_population
-    GROUP BY Continent
-),
-CountryGrowthRate AS (
-    SELECT Country,
-           Continent,
-           `Growth Rate`
-    FROM world_population
-)
-SELECT c.Country,
-       c.`Growth Rate`,
-       a.Average_Growth_Rate
-FROM CountryGrowthRate c
-JOIN ContinentAverageGrowthRate a ON c.Continent = a.Continent
-WHERE c.`Growth Rate` > a.Average_Growth_Rate;
-
 -- Top 3 Countries by Population in Each Continent
 
 WITH RankedCountries AS (
@@ -156,27 +123,7 @@ SELECT Country,
 FROM RankedCountries
 WHERE Population_Rank <= 3;
 
--- View for Population Density Change
-CREATE VIEW PopulationDensityChange AS
-SELECT Country,
-       (`2022 Population` / `Area (km²)`) AS Density_2022,
-       (`1970 Population` / `Area (km²)`) AS Density_1970,
-       (`2022 Population` / `Area (km²)`) - (`1970 Population` / `Area (km²)`) AS Density_Change
-FROM world_population;
 
--- Convert Density to Numeric Format
-
-SELECT Country, 
-       CAST(Density AS DECIMAL(10, 2)) AS Densityy
-FROM world_population;
-
--- Temporary table to Analyzing Population Density by Continent
-
-CREATE TEMPORARY TABLE TempPopulationDensity AS
-SELECT Country,
-       Continent,
-       (`2022 Population` / `Area (km²)`) AS Population_Density
-FROM world_population;
 
 
 
