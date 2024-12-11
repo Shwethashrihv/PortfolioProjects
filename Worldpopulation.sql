@@ -93,20 +93,6 @@ GROUP BY Continent
 ORDER BY Avg_Growth_Rate DESC
 LIMIT 1;
 
---  Population Density Increase from 1970 to 2022
-WITH DensityChange AS (
-    SELECT Country,
-           (`2022 Population` / `Area (km²)`) AS Density_2022,
-           (`1970 Population` / `Area (km²)`) AS Density_1970,
-           (`2022 Population` / `Area (km²)`) - (`1970 Population` / `Area (km²)`) AS Density_Change
-    FROM world_population
-)
-SELECT Country,
-       Density_2022,
-       Density_1970,
-       Density_Change
-FROM DensityChange;
-
 -- Top 3 Countries by Population in Each Continent
 
 WITH RankedCountries AS (
